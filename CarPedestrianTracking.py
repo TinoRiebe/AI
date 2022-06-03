@@ -1,21 +1,24 @@
 import cv2
 from random import randrange
 
-classifier_file = 'cars.xml'
-img_file = 'cars2.jpg'
+car_track_file = 'cars.xml'
+pedestrian_track_file = 'haarcascade_fullbody.xml'
+img_file = ['cars.jpg', 'cars2.jpg', 'car_ped_1.jpg', 'car_ped_2.jpg', 'car_ped_3.jpg', 'car_ped_4.jpg', 'car_ped_5.jpg']
 
+car_classifier = cv2.CascadeClassifier(car_track_file)
+pedestrian_classifier = cv2.CascadeClassifier(pedestrian_track_file)
 
-# load a image
-img_color = cv2.imread('cars2.jpg')
-img_gray = cv2.cvtColor(img_color, cv2.COLOR_BGR2GRAY)
-# cv2.imshow('test', img_gray)
-# cv2.waitKey()
-classifier = cv2.CascadeClassifier('cars.xml')
-tracker = classifier.detectMultiScale(img_gray)
-for (x, y, w, h) in tracker:
-    cv2.rectangle(img_color, (x, y), (x + w, y + h), (randrange(128, 256), randrange(256), randrange(256)), 2)
-cv2.imshow('cars', img_color)
-cv2.waitKey()
+# for img in img_file:
+#     img_color = cv2.imread(img)
+#     img_gray = cv2.cvtColor(img_color, cv2.COLOR_BGR2GRAY)
+#     car_tracker = car_classifier.detectMultiScale(img_gray)
+#     ped_tracker = pedestrian_classifier.detectMultiScale(img_gray)
+#     for (x, y, w, h) in car_tracker:
+#         cv2.rectangle(img_color, (x, y), (x + w, y + h), (0, 255, 0), 2)
+#     for (x, y, w, h) in ped_tracker:
+#         cv2.rectangle(img_color, (x, y), (x + w, y + h), (255, 0, 0), 2)
+#     cv2.imshow('cars', img_color)
+#     cv2.waitKey()
 
 # load a video
 cap = cv2.VideoCapture('car1.mp4')
@@ -25,16 +28,17 @@ while cap.isOpened():
         print("can't receive frames (stream end?). Exciting")
         break
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    tracker = classifier.detectMultiScale(gray)
-    for (x, y, w, h) in tracker:
-        cv2.rectangle(frame, (x, y), (x+w, y+h), (randrange(128, 256), randrange(256), randrange(256)), 2)
-
+    car_tracker = car_classifier.detectMultiScale(gray)
+    for (x, y, w, h) in car_tracker:
+        cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+    ped_tracker = pedestrian_classifier.detectMultiScale(gray)
+    for (x, y, w, h) in ped_tracker:
+        cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
     cv2.imshow('frame', frame)
-    if cv2.waitKey(25) == ord('q'):
+    if cv2.waitKey(50) == ord('q'):
         break
 cap.release()
 cv2.destroyAllWindows()
-
 
 print('Code Completed')
 
